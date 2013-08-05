@@ -9,6 +9,7 @@ import System.Process
 import qualified Data.ByteString.Lazy as B
 import Control.Applicative
 import System.Exit
+import Control.Monad ( forM_ )
 
 -- define equality for Archives so timestamps aren't distinguished if they
 -- correspond to the same MSDOS datetime.
@@ -28,6 +29,7 @@ main = do
                                 , testAddFilesOptions
                                 , testDeleteEntries
                                 , testExtractFiles
+                                , testArchiveManyFiles
                                 ]
   removeDirectoryRecursive "test-temp"
   exitWith $ case errors res of
@@ -98,3 +100,14 @@ testExtractFiles = TestCase $ do
   assertEqual "contents of test-temp/dir1/hi" hiMsg hi
   assertEqual "contents of test-temp/dir1/dir2/hello" helloMsg hello
 
+testArchiveManyFiles :: Test
+testArchiveManyFiles = TestCase $ do
+  createDirectory "test-temp/many"
+  forM_ [1..100 :: Int] $ \i -> do
+    let dir = "test-temp/many/" ++ (show i)
+    createDirectory dir
+    forM_ [1..100 :: Int] $ \j -> do
+      writeFile (dir ++ "/" ++ (show j)) "hello there"
+  archive <- addFilesToArchive [OptRecursive] emptyArchive ["test-temp/many"]
+  removeDirectoryRecursive "test-temp/many"
+  extractFilesFromArchive [OptVerbose] archive
