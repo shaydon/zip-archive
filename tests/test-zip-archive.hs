@@ -93,7 +93,7 @@ testExtractFiles = TestCase $ do
   writeFile "test-temp/dir1/hi" hiMsg
   writeFile "test-temp/dir1/dir2/hello" helloMsg
   archive <- addFilesToArchive [OptRecursive] emptyArchive ["test-temp/dir1"]
-  removeDirectoryRecursive "test-temp/dir1"
+  -- removeDirectoryRecursive "test-temp/dir1"
   extractFilesFromArchive [OptVerbose] archive
   hi <- readFile "test-temp/dir1/hi"
   hello <- readFile "test-temp/dir1/dir2/hello"
@@ -109,5 +109,5 @@ testArchiveManyFiles = TestCase $ do
     forM_ [1..100 :: Int] $ \j -> do
       writeFile (dir ++ "/" ++ (show j)) "hello there"
   archive <- addFilesToArchive [OptRecursive] emptyArchive ["test-temp/many"]
-  removeDirectoryRecursive "test-temp/many"
+  -- removeDirectoryRecursive "test-temp/many"
   extractFilesFromArchive [OptVerbose] archive

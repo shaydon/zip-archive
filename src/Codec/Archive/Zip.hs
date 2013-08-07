@@ -73,6 +73,7 @@ import Control.Monad ( liftM )
 #endif
 import System.Directory ( getModificationTime )
 import System.IO ( stderr, hPutStrLn )
+import System.IO.Unsafe ( unsafeInterleaveIO )
 import qualified Data.Digest.CRC32 as CRC32
 import qualified Data.Map as M
 #if MIN_VERSION_binary(0, 6, 0)
@@ -219,7 +220,7 @@ readEntry opts path = do
               path ++ if isDir then "/" else ""  -- make sure directories end with /
   contents <- if isDir
                  then return B.empty
-                 else B.readFile path
+                 else unsafeInterleaveIO $ B.readFile path
 #if MIN_VERSION_directory(1,2,0)
   modEpochTime <- liftM (floor . utcTimeToPOSIXSeconds)
                    $ getModificationTime path
